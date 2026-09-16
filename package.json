@@ -1,0 +1,26 @@
+{
+  "name": "supportdesk-crm",
+  "version": "1.0.0",
+  "description": "Production-grade Customer Support Ticketing CRM built with Next.js, Express, TypeScript, and PostgreSQL (Prisma ORM)",
+  "scripts": {
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build",
+    "db:push": "npm --prefix server run prisma:push",
+    "db:seed": "npm --prefix server run prisma:seed",
+    "db:studio": "npm --prefix server run prisma:studio"
+  },
+  "keywords": [
+    "crm",
+    "ticketing",
+    "nextjs",
+    "express",
+    "prisma",
+    "postgresql",
+    "typescript",
+    "supportdesk"
+  ],
+  "author": "",
+  "license": "MIT"
+}
