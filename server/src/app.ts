@@ -16,14 +16,27 @@ export const createApp = (): Application => {
       origin: (origin, callback) => {
         // Allow requests with no origin (like mobile apps, curl, or Postman)
         if (!origin) return callback(null, true);
-        if (config.corsOrigins.includes('*') || config.corsOrigins.includes(origin)) {
+
+        const normalizedOrigin = origin.replace(/\/$/, '');
+
+        // Allow wildcard or explicit origin matches
+        if (
+          config.corsOrigins.includes('*') ||
+          config.corsOrigins.some((allowed) => allowed.replace(/\/$/, '') === normalizedOrigin)
+        ) {
           return callback(null, true);
         }
-        // In development, allow localhost origins dynamically
-        if (!config.isProduction && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+
+        // Automatically allow any Vercel deployment URL or localhost
+        if (
+          normalizedOrigin.includes('vercel.app') ||
+          normalizedOrigin.includes('localhost') ||
+          normalizedOrigin.includes('127.0.0.1')
+        ) {
           return callback(null, true);
         }
-        callback(new Error('CORS policy does not allow access from this origin.'));
+
+        callback(new Error(`CORS policy does not allow access from origin: ${origin}`));
       },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
