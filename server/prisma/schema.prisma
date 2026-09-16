@@ -1,0 +1,72 @@
+// SupportDesk Prisma Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Ticket {
+  id              String         @id @default(uuid())
+  ticket_id       String         @unique // Public formatted ID, e.g. "TKT-001"
+  customer_name   String
+  customer_email  String
+  subject         String
+  description     String         @db.Text
+  status          TicketStatus   @default(OPEN)
+  priority        TicketPriority @default(MEDIUM)
+  order_reference String?        // Standout Feature: Order Reference (e.g. "ORD-2026-001")
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+
+  // Relationships
+  notes           Note[]
+  activities      TicketActivity[]
+
+  // Indexes for high-frequency queries
+  @@index([status])
+  @@index([priority])
+  @@index([created_at(sort: Desc)])
+  @@index([ticket_id])
+  @@index([customer_email])
+  @@map("tickets")
+}
+
+model Note {
+  id         String   @id @default(uuid())
+  ticket_id  String
+  ticket     Ticket   @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  author     String   @default("Support Agent")
+  content    String   @db.Text
+  created_at DateTime @default(now())
+
+  @@index([ticket_id])
+  @@map("notes")
+}
+
+model TicketActivity {
+  id          String   @id @default(uuid())
+  ticket_id   String
+  ticket      Ticket   @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  action_type String   // "TICKET_CREATED", "STATUS_UPDATED", "PRIORITY_UPDATED", "NOTE_ADDED"
+  description String   @db.Text // Human-readable change summary
+  created_at  DateTime @default(now())
+
+  @@index([ticket_id])
+  @@map("ticket_activities")
+}
