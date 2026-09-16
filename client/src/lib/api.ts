@@ -9,7 +9,8 @@ import {
   TicketPriority,
 } from '@/types/ticket';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const rawBase = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').trim().replace(/\/+$/, '');
+const API_BASE_URL = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
 
 export interface TicketQueryParams {
   status?: TicketStatus | 'ALL';

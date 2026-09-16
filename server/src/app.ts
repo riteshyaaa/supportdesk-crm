@@ -64,6 +64,7 @@ export const createApp = (): Application => {
   // Application Routes
   app.use('/health', healthRoutes);
   app.use('/api/tickets', ticketRoutes);
+  app.use('/tickets', ticketRoutes); // Support root /tickets as well
 
   // 404 Catch-all for undefined routes
   app.use((req: Request, _res: Response, next: NextFunction) => {
